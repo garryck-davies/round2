@@ -1,7 +1,4 @@
-body {
-    margin: 40px;
-  }
- 
+
   .content {
     grid-area: content;
     height: 100vh;

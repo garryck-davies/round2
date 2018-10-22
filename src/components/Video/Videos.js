@@ -9,7 +9,10 @@ export default class Videos extends Component {
 
         this.state = {
             currentUrl: '',
-            videoList: []
+            currentVideo: {},
+            videoList: [],
+            favorites: [],
+            newUrl: {}
         }
     }
 
@@ -20,31 +23,58 @@ export default class Videos extends Component {
             .then((res) => {
                 this.setState({videoList: res.data})
                 console.log(res.data)
+            axios.get('/api/favorites').then(res => {
+                this.setState({favorites: res.data})
+            })
             })
         })
         
     }
-    addUrl(id) {
-        this.setState({currentUrl: id})
+
+    addUrl = (id, video) => {
+        this.setState({
+            currentUrl: id,
+            currentVideo: video
+        })
     }
-id
+
+    addIt(){
+        // console.log(value)
+        axios.post('/api/addIt', {video: this.state.currentVideo}).then(res => {
+            this.setState({
+                favorites: res.data 
+            })
+        })
+    }
 
     render() {
+        console.log(this.state.currentVideo)
         const videoList = this.state.videoList.map((video, i) => {
-           return <img onClick={() => this.addUrl(video.id.videoId)} src={video.snippet.thumbnails.default.url} alt="thumbnail"/>
+           return <img onClick={() => this.addUrl(video.id.videoId, video)} src={video.snippet.thumbnails.default.url} alt="thumbnail"/>
         })
         console.log(this.state.currentUrl)
+        const favorites = this.state.favorites.map((video, i) => {
+            return <img onClick={() => this.addUrl(video.id.videoId)} src=
+            {video.snippet.thumbnails.default.url} alt="thumbnail" />
+        })
+        console.log(this.state.favorites)
         return(
             <div className="main-container">
-           {videoList}     
-           
+                <div className="vidlist">
+                    {videoList}     
+                </div>
             <div className="video-container">
             <Iframe url={`https://www.youtube.com/embed/${this.state.currentUrl}`}
-                width="450px"
-        height="450px"
+                width="550px"
+        height="550px"
         id="myId"
         className="myClassname"
         allowFullScreen/>
+            </div>
+            <div className="favorite">
+                {favorites}
+                {console.log(this.state.favorites)}
+            <button onClick={e => this.addIt(e.target.value)}>Add To Playlist</button>
             </div>
              </div>
         )
